@@ -52,8 +52,8 @@ const STOP_AFTER_FAILURES = 3;
 const MAX_PAGES = 60; // Samsung is ~30 pages of 50; a runaway loop stops here.
 const COMPLETE_RATIO = 0.9; // a brand file with >= 90% of device_count is done
 
-// Brands whose colors are worth having first (the shop's market).
-const COLOR_PRIORITY = [
+// The shop's market: these brands are read first, and get colors first.
+const PRIORITY = [
   'samsung', 'apple', 'xiaomi', 'oppo', 'realme', 'vivo', 'honor', 'huawei',
   'infinix', 'tecno', 'nokia', 'motorola', 'oneplus', 'google', 'itel', 'lenovo',
 ];
@@ -203,8 +203,16 @@ async function syncBrands(state) {
       : null;
     if (reason) queue.push({ brand: b, reason, lastTry: st.last_attempt ?? '' });
   }
-  // Least recently tried first, so a brand that keeps failing can't starve the rest.
-  queue.sort((a, b) => a.lastTry.localeCompare(b.lastTry) || a.brand.count - b.brand.count);
+  // The shop's brands first; within a group, least recently tried first, so a
+  // brand that keeps failing can't starve the rest.
+  const rank = (slug) => {
+    const i = PRIORITY.findIndex((p) => slug.startsWith(`${p}-phones-`));
+    return i === -1 ? PRIORITY.length : i;
+  };
+  queue.sort((a, b) =>
+    rank(a.brand.slug) - rank(b.brand.slug) ||
+    a.lastTry.localeCompare(b.lastTry) ||
+    a.brand.count - b.brand.count);
   console.log(`brands: ${brands.size}, ${queue.length} need reading`);
 
   let done = 0;
@@ -255,8 +263,8 @@ async function syncColors() {
   const colors = await readJson(file, {});
   const files = existsSync(MODELS) ? (await readdir(MODELS)).sort() : [];
   const rank = (f) => {
-    const i = COLOR_PRIORITY.findIndex((p) => f.startsWith(`${p}-phones-`));
-    return i === -1 ? COLOR_PRIORITY.length : i;
+    const i = PRIORITY.findIndex((p) => f.startsWith(`${p}-phones-`));
+    return i === -1 ? PRIORITY.length : i;
   };
   files.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
   const pending = [];
