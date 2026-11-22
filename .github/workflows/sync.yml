@@ -5,14 +5,16 @@ name: Sync catalog
 
 on:
   schedule:
-    - cron: '0 3 * * 1'      # brands + model lists, weekly (Mon 03:00 UTC)
-    - cron: '30 */6 * * *'   # colors backfill, capped; no-op once complete
+    # Hourly, with a 20-minute budget. phone-specs-api is throttled for long
+    # stretches; the script stops after 3 failures and the next hour continues
+    # from data/state.json. Once the catalog is complete a run is 1 request.
+    - cron: '17 * * * *'
   workflow_dispatch:
     inputs:
       phase:
         type: choice
-        options: [brands, colors, all]
-        default: brands
+        options: [all, brands, colors]
+        default: all
       limit:
         type: string
         default: ''
@@ -31,7 +33,7 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 110
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,16 +47,15 @@ jobs:
             ARGS="--phase=${{ inputs.phase }}"
             [ -n "${{ inputs.limit }}" ] && ARGS="$ARGS --limit=${{ inputs.limit }}"
             [ "${{ inputs.force }}" = "true" ] && ARGS="$ARGS --force"
-          elif [ "${{ github.event.schedule }}" = "0 3 * * 1" ]; then
-            ARGS="--phase=brands"
           else
-            ARGS="--phase=colors --limit=1200"
+            ARGS="--phase=all"
           fi
+          ARGS="$ARGS --budget-min=20"
           echo "args=$ARGS" >> "$GITHUB_OUTPUT"
 
       - name: Sync
         env:
-          INTERVAL_MS: '2000'
+          INTERVAL_MS: '3000'
         run: node scripts/sync.mjs ${{ steps.p.outputs.args }}
 
       - name: Commit
