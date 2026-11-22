@@ -1,0 +1,81 @@
+# Keeps data/ in step with phone-specs-api. The mobile_maintenance app reads
+# data/ through jsDelivr (raw.githubusercontent.com as fallback) and never calls
+# phone-specs-api itself.
+name: Sync catalog
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'      # brands + model lists, weekly (Mon 03:00 UTC)
+    - cron: '30 */6 * * *'   # colors backfill, capped; no-op once complete
+  workflow_dispatch:
+    inputs:
+      phase:
+        type: choice
+        options: [brands, colors, all]
+        default: brands
+      limit:
+        type: string
+        default: ''
+      force:
+        description: 'Refetch every brand, even if its count did not change'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: catalog-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Resolve phase
+        id: p
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ARGS="--phase=${{ inputs.phase }}"
+            [ -n "${{ inputs.limit }}" ] && ARGS="$ARGS --limit=${{ inputs.limit }}"
+            [ "${{ inputs.force }}" = "true" ] && ARGS="$ARGS --force"
+          elif [ "${{ github.event.schedule }}" = "0 3 * * 1" ]; then
+            ARGS="--phase=brands"
+          else
+            ARGS="--phase=colors --limit=1200"
+          fi
+          echo "args=$ARGS" >> "$GITHUB_OUTPUT"
+
+      - name: Sync
+        env:
+          INTERVAL_MS: '2000'
+        run: node scripts/sync.mjs ${{ steps.p.outputs.args }}
+
+      - name: Commit
+        id: commit
+        run: |
+          git config user.name  "catalog-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "changed=" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "changed=$(git diff --cached --name-only | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+          git commit -m "sync: ${{ steps.p.outputs.args }}"
+          git push
+
+      # jsDelivr caches branch files for up to 12 h; purge what changed so the
+      # app sees new phones right away. Best effort — never fails the job.
+      - name: Purge CDN
+        if: steps.commit.outputs.changed != ''
+        run: |
+          for f in ${{ steps.commit.outputs.changed }}; do
+            curl -s -o /dev/null -w "%{http_code} $f\n" \
+              "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/$f" || true
+          done
