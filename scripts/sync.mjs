@@ -38,7 +38,9 @@ const MODELS = path.join(DATA, 'models');
 
 const BASE = process.env.PHONE_SPECS_API_BASE_URL || 'https://phone-specs-api.vercel.app';
 const INTERVAL_MS = Number(process.env.INTERVAL_MS || 2000);
-const BACKOFF_MS = [10_000, 30_000, 90_000];
+// phone-specs-api fails intermittently (GSMArena rate-limits its shared IP), so
+// give each request up to ~6 minutes before moving on.
+const BACKOFF_MS = [10_000, 30_000, 90_000, 240_000];
 const MAX_PAGES = 60; // Samsung is ~30 pages of 50; a runaway loop stops here.
 
 const args = Object.fromEntries(
@@ -131,9 +133,13 @@ async function syncBrands() {
   const previous = await readJson(path.join(DATA, 'brands.json'), []);
   const prevBySlug = new Map(previous.map((b) => [b.slug, b]));
 
-  const live = await api('/brands');
+  let live = await api('/brands');
   if (!Array.isArray(live) || live.length === 0) {
-    throw new Error('Could not read /brands — nothing changed.');
+    if (previous.length === 0) throw new Error('Could not read /brands and no previous list — nothing changed.');
+    // Carry on with last run's list: the model pages are separate requests and
+    // usually still answer when this one doesn't.
+    console.warn(`/brands unavailable — using the previous list (${previous.length} brands)`);
+    live = previous.map((b) => ({ brand_slug: b.slug, brand_name: b.name, device_count: b.count }));
   }
 
   const merged = new Map(prevBySlug);
