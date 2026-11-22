@@ -68,7 +68,13 @@ jobs:
           fi
           echo "changed=$(git diff --cached --name-only | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
           git commit -m "sync: ${{ steps.p.outputs.args }}"
-          git push
+          # main may have moved while this ran (another commit, a hand edit);
+          # data/ is only ever written by this job, so a rebase is safe.
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && exit 0
+            sleep 10
+          done
+          exit 1
 
       # jsDelivr caches branch files for up to 12 h; purge what changed so the
       # app sees new phones right away. Best effort — never fails the job.
