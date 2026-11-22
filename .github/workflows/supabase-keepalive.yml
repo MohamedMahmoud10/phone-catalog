@@ -1,0 +1,38 @@
+# Keeps the free Supabase project (invoice photos + receipt links) awake.
+# Supabase pauses a free project after 7 days without activity; a paused
+# project takes every photo and every receipt link the app has ever sent
+# offline. That happened once (found 23 Nov 2026). One tiny read a day
+# prevents it.
+#
+# Secrets (Settings -> Secrets -> Actions): SUPABASE_URL and
+# SUPABASE_PUBLISHABLE_KEY - the same public, SELECT-only key the app ships.
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: '17 6 * * *'   # daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read one row
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' \
+              "$URL/rest/v1/device_brands?select=slug&limit=1" -H "apikey: $KEY")
+            echo "attempt $i: HTTP $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 20
+          done
+          # Failing turns the run red and GitHub emails the owner - which is
+          # the point: a paused project should be noticed the same day.
+          echo "Supabase did not answer - is the project paused?"; exit 1
