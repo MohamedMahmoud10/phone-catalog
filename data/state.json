@@ -19,13 +19,23 @@
       "last_attempt": "2026-11-22T23:30:54.942Z"
     },
     "samsung-phones-9": {
-      "last_attempt": "2026-11-23T20:09:09.368Z"
+      "last_attempt": "2026-11-24T04:45:25.833Z",
+      "ok_count": 1473,
+      "last_ok": "2026-11-24T04:46:58.558Z"
     },
     "xiaomi-phones-80": {
-      "last_attempt": "2026-11-23T20:09:32.496Z"
+      "last_attempt": "2026-11-24T04:46:58.558Z",
+      "ok_count": 558,
+      "last_ok": "2026-11-24T04:47:37.478Z"
     },
     "oppo-phones-82": {
-      "last_attempt": "2026-11-23T20:09:55.835Z"
+      "last_attempt": "2026-11-24T04:47:37.478Z"
+    },
+    "realme-phones-118": {
+      "last_attempt": "2026-11-24T04:48:12.710Z"
+    },
+    "vivo-phones-98": {
+      "last_attempt": "2026-11-24T04:48:36.042Z"
     }
   }
 }

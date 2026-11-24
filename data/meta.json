@@ -1,9 +1,9 @@
 {
   "source": "https://phone-specs-api.vercel.app",
   "brands": 127,
-  "brands_with_models": 39,
-  "models": 3005,
+  "brands_with_models": 41,
+  "models": 5033,
   "models_with_colors_checked": 5,
-  "last_change": null,
-  "heartbeat": "2026-11-22T23:28:52.687Z"
+  "last_change": "2026-11-24T04:48:59.415Z",
+  "heartbeat": "2026-11-24T04:48:59.415Z"
 }
