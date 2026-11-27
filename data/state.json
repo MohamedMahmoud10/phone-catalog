@@ -24,9 +24,9 @@
       "last_ok": "2026-11-24T04:46:58.558Z"
     },
     "xiaomi-phones-80": {
-      "last_attempt": "2026-11-24T04:46:58.558Z",
-      "ok_count": 558,
-      "last_ok": "2026-11-24T04:47:37.478Z"
+      "last_attempt": "2026-11-27T04:59:44.992Z",
+      "ok_count": 559,
+      "last_ok": "2026-11-27T05:00:23.761Z"
     },
     "oppo-phones-82": {
       "last_attempt": "2026-11-25T09:48:55.503Z",
@@ -44,18 +44,33 @@
       "last_ok": "2026-11-25T09:50:28.160Z"
     },
     "honor-phones-121": {
-      "last_attempt": "2026-11-25T09:50:28.160Z",
-      "ok_count": 360,
-      "last_ok": "2026-11-25T09:50:55.179Z"
+      "last_attempt": "2026-11-27T05:00:23.761Z",
+      "ok_count": 361,
+      "last_ok": "2026-11-27T05:00:50.726Z"
     },
     "huawei-phones-58": {
-      "last_attempt": "2026-11-26T22:18:19.224Z"
+      "last_attempt": "2026-11-27T05:00:50.726Z",
+      "ok_count": 560,
+      "last_ok": "2026-11-27T05:01:29.736Z"
     },
     "infinix-phones-119": {
-      "last_attempt": "2026-11-26T22:18:42.606Z"
+      "last_attempt": "2026-11-27T05:01:29.736Z",
+      "ok_count": 176,
+      "last_ok": "2026-11-27T05:01:44.717Z"
     },
     "tecno-phones-120": {
-      "last_attempt": "2026-11-26T22:19:05.993Z"
+      "last_attempt": "2026-11-27T05:01:44.717Z",
+      "ok_count": 198,
+      "last_ok": "2026-11-27T05:01:59.713Z"
+    },
+    "nokia-phones-1": {
+      "last_attempt": "2026-11-27T05:01:59.713Z"
+    },
+    "motorola-phones-4": {
+      "last_attempt": "2026-11-27T05:02:23.054Z"
+    },
+    "oneplus-phones-95": {
+      "last_attempt": "2026-11-27T05:02:46.421Z"
     }
   }
 }
