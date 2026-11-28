@@ -64,13 +64,37 @@
       "last_ok": "2026-11-27T05:01:59.713Z"
     },
     "nokia-phones-1": {
-      "last_attempt": "2026-11-27T23:25:14.077Z"
+      "last_attempt": "2026-11-28T07:41:01.147Z"
     },
     "motorola-phones-4": {
-      "last_attempt": "2026-11-27T23:25:37.459Z"
+      "last_attempt": "2026-11-28T07:42:00.531Z"
     },
     "oneplus-phones-95": {
-      "last_attempt": "2026-11-27T23:26:00.880Z"
+      "last_attempt": "2026-11-28T07:42:47.385Z"
+    },
+    "google-phones-107": {
+      "last_attempt": "2026-11-28T07:43:10.774Z",
+      "ok_count": 46,
+      "last_ok": "2026-11-28T07:43:16.790Z"
+    },
+    "itel-phones-131": {
+      "last_attempt": "2026-11-28T07:43:16.790Z",
+      "ok_count": 75,
+      "last_ok": "2026-11-28T07:43:25.784Z"
+    },
+    "lenovo-phones-73": {
+      "last_attempt": "2026-11-28T07:43:25.784Z",
+      "ok_count": 268,
+      "last_ok": "2026-11-28T07:43:46.828Z"
+    },
+    "xcute-phones-43": {
+      "last_attempt": "2026-11-28T07:43:46.829Z"
+    },
+    "inq-phones-60": {
+      "last_attempt": "2026-11-28T07:44:10.185Z"
+    },
+    "jolla-phones-84": {
+      "last_attempt": "2026-11-28T07:44:33.626Z"
     }
   }
 }
